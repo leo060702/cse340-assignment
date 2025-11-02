@@ -1,6 +1,192 @@
-/******* Change Box Model ***************/
-*,
-*:before,
-*:after {
-  box-sizing: border-box;
+/* --- 全局样式 --- */
+body {
+    /* TODO: 在这里选择您自己的字体。
+      作业要求：专业且易于阅读 [cite: 93]。
+    */
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+#wrapper {
+    max-width: 960px;
+    margin: 0 auto;
+    /* TODO: 在这里选择您自己的背景颜色 */
+    background-color: #ffffff; 
+}
+
+/* TODO: 在这里为您在 partials 中创建的 
+  <header>, <nav>, 和 <footer> 添加样式。
+*/
+header h1 {
+    /* 示例 */
+    text-align: center;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    display: flex; /* 将导航项变为水平 */
+    justify-content: space-around;
+    /* TODO: 选择导航栏的背景颜色 */
+    background-color: #333;
+}
+
+nav a {
+    /* TODO: 选择导航链接的颜色 */
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    display: block;
+}
+
+/* --- 移动端样式 (默认) --- */
+/* 这是您的基础样式，在媒体查询之外  */
+
+main {
+    padding: 1rem;
+}
+
+h1, h2 {
+    /* TODO: 选择您自己的字体和颜色 */
+    color: #333;
+}
+
+/* 英雄区域 (Hero Section) */
+.hero {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.hero img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.hero-content {
+    /* 移动端：内容显示在图片上方 */
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    /* TODO: 选择一个通过可访问性检查的背景颜色 */
+    background-color: rgba(255, 255, 255, 0.8); 
+    padding: 0.5rem;
+    max-width: 200px; /* 限制宽度以匹配示例 */
+}
+
+.hero-content h2 {
+    margin: 0 0 0.5rem 0;
+}
+
+.hero-content ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1rem 0;
+}
+
+.hero-content button {
+    /* TODO: 选择您自己的按钮颜色 */
+    background-color: #007bff;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    cursor: pointer;
+}
+
+
+/* 主要内容（移动端：评论在升级之前）*/
+.main-content {
+    display: grid;
+    grid-template-columns: 1fr; /* 单列布局 */
+    gap: 1.5rem;
+}
+
+.reviews {
+    grid-row: 1; /* 评论在第一行 */
+}
+
+.upgrades {
+    grid-row: 2; /* 升级在第二行 */
+}
+
+/* 升级网格 */
+.upgrades-grid {
+    display: grid;
+    /* 移动端：2x2 网格 */
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.upgrade-item {
+    text-align: center;
+    /* TODO: 选择您自己的背景颜色 */
+    background-color: #f0f0f0; 
+    padding: 1rem;
+}
+
+.upgrade-item img {
+    width: 100%;
+    max-width: 80px;
+    height: auto;
+}
+
+/* --- 大型屏幕媒体查询 --- */
+/* 作业要求：使用媒体查询调整大屏幕布局 
+  我们将使用 768px 作为断点示例 
+*/
+
+@media (min-width: 768px) {
+
+    /* 英雄区域 (Hero Section) - 大型屏幕 */
+    .hero-content {
+        /* 在大型屏幕上，内容仍在图片顶部，
+          但按钮移动到了图片外部。
+          注意：作业图片 [cite: 36] 显示 "Own Today" 按钮在内容框之外。
+          我们将使用绝对定位来实现这一点。
+        */
+        position: static; /* 移除绝对定位 */
+        grid-column: 1 / 2;
+        grid-row: 1 / 2;
+        background-color: transparent;
+        z-index: 1; /* 确保内容在图片之上 */
+        align-self: start;
+        margin: 2rem;
+    }
+
+    .hero {
+        display: grid; /* 使用网格来重叠内容和图片 */
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .hero img {
+        grid-column: 1 / 3; /* 图片横跨两列 */
+        grid-row: 1 / 2;
+        width: 100%;
+    }
+
+    .hero-content button {
+        /* 将按钮定位到内容框的外部 */
+        position: absolute;
+        left: 2rem;
+        bottom: 2rem; 
+        z-index: 1;
+    }
+
+
+    /* 主要内容 - 大型屏幕 */
+    .main-content {
+        /* 变为两列布局 */
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .reviews {
+        grid-column: 2; /* 评论在第二列 */
+        grid-row: 1;
+    }
+
+    .upgrades {
+        grid-column: 1; /* 升级在第一列 */
+        grid-row: 1;
+    }
 }
