@@ -1,30 +1,37 @@
 /* ******************************************
- * This server.js file is the primary file of the 
- * application. It is used to control the project.
+ * Primary server file
  *******************************************/
+
 /* ***********************
  * Require Statements
  *************************/
 const express = require("express")
-const env = require("dotenv").config()
-const app = express()
-const static = require("./routes/static")
+require("dotenv").config()
+const path = require("path")
 
-/* ***********************
- * Routes
- *************************/
-app.use(static)
+const app = express()
+
+// 1) 视图引擎：EJS
+app.set("view engine", "ejs")
+// 2) 指定 EJS 模板目录（确保你的 index.ejs 在 ./views 里）
+app.set("views", path.join(__dirname, "views"))
+
+// 3) 静态资源目录（可选：如果有 public/ 放 css/js/img）
+app.use(express.static(path.join(__dirname, "public")))
+
+// 4) 路由
+const staticRoutes = require("./routes/static")
+app.use("/", staticRoutes)  // 挂在根路径
 
 /* ***********************
  * Local Server Information
- * Values from .env (environment) file
+ * Use PORT from env (Render 会注入 PORT)
  *************************/
-const port = process.env.PORT
-const host = process.env.HOST
+const port = process.env.PORT || 3000
 
 /* ***********************
  * Log statement to confirm server operation
  *************************/
 app.listen(port, () => {
-  console.log(`app listening on ${host}:${port}`)
+  console.log(`App listening on port ${port}`)
 })
