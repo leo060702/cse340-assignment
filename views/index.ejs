@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- 只包含 <meta>/<title>/<link> 的内部内容，不要在 head.ejs 里再写 <head> 标签 -->
   <%- include('partials/head') %>
 </head>
 <body>
-  <header>
-    <h1>Welcome to CSE Motors!</h1>
-  </header>
+  <!-- 顶部：站点头部 -->
+  <%- include('partials/header') %>
 
-  <main>
+  <!-- 主导航 -->
+  <%- include('partials/navigation') %>
+
+  <main class="main-content">
     <!-- Hero Section -->
     <section class="hero">
       <div class="hero-content">
@@ -58,5 +61,8 @@
       </div>
     </section>
   </main>
+
+  <!-- 页脚 -->
+  <%- include('partials/footer') %>
 </body>
 </html>
