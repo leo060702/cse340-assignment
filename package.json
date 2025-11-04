@@ -1,14 +1,27 @@
 {
   "name": "cse340-assignment",
   "version": "1.0.0",
+  "description": "CSE 340 Assignment project using Express and EJS for Render deployment.",
   "main": "server.js",
   "type": "commonjs",
   "scripts": {
     "start": "node server.js",
-    "build": "echo \"skip build\""
+    "build": "echo \"No build step required\""
   },
   "dependencies": {
+    "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
     "express": "^4.19.2"
-  }
+  },
+  "engines": {
+    "node": ">=18.x"
+  },
+  "keywords": [
+    "express",
+    "ejs",
+    "render",
+    "cse340"
+  ],
+  "author": "Zhili Zhong",
+  "license": "MIT"
 }
