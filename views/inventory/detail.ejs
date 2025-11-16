@@ -1,25 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Head partial: CSS, meta tags, title binding -->
-  <%- include("../partials/head"); %>
+  <%- include('../partials/head') %>
   <title><%= title %></title>
 </head>
-
 <body>
-  <!-- Navigation -->
-  <header>
-    <%- nav %>
-  </header>
 
-  <!-- Main content -->
-  <main id="main-content" class="wrapper">
+  <!-- 顶部：站点头部 -->
+  <%- include('../partials/header') %>
+
+  <!-- 主导航 -->
+  <%- include('../partials/navigation') %>
+
+  <!-- 主内容 -->
+  <main class="main-content">
     <%= content %>
   </main>
 
-  <!-- Footer -->
-  <footer>
-    <%- include("../partials/footer"); %>
-  </footer>
+  <!-- 页脚 -->
+  <%- include('../partials/footer') %>
+
 </body>
 </html>
