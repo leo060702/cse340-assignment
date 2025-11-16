@@ -11,27 +11,58 @@ const path = require("path")
 
 const app = express()
 
-// 1) 视图引擎：EJS
+/* ***********************
+ * View Engine and Static Files
+ *************************/
 app.set("view engine", "ejs")
-// 2) 指定 EJS 模板目录（确保你的 index.ejs 在 ./views 里）
 app.set("views", path.join(__dirname, "views"))
-
-// 3) 静态资源目录（可选：如果有 public/ 放 css/js/img）
 app.use(express.static(path.join(__dirname, "public")))
 
-// 4) 路由
+/* ***********************
+ * Routes
+ *************************/
 const staticRoutes = require("./routes/static")
-app.use("/", staticRoutes)  // 挂在根路径
+const inventoryRoutes = require("./routes/inventoryRoute")
+const errorRoutes = require("./routes/errorRoute")
+
+// 挂载路由
+app.use("/", staticRoutes)
+app.use("/inv", inventoryRoutes)
+app.use("/error", errorRoutes)
 
 /* ***********************
- * Local Server Information
- * Use PORT from env (Render 会注入 PORT)
+ * 404 Not Found Handler
+ *************************/
+app.use((req, res, next) => {
+  const err = new Error("Page Not Found")
+  err.status = 404
+  next(err)
+})
+
+/* ***********************
+ * Global Error Handler (500, all errors)
+ *************************/
+app.use(async (err, req, res, next) => {
+  console.error("⚠️ ERROR:", err.message)
+
+  const status = err.status || 500
+
+  // 导航栏（utilities/getNav 必须存在）
+  const utilities = require("./utilities")
+  const nav = await utilities.getNav()
+
+  res.status(status).render("errors/error", {
+    title: status === 404 ? "404 - Page Not Found" : "500 - Server Error",
+    message: err.message,
+    nav,
+  })
+})
+
+/* ***********************
+ * Server Listener
  *************************/
 const port = process.env.PORT || 3000
 
-/* ***********************
- * Log statement to confirm server operation
- *************************/
 app.listen(port, () => {
-  console.log(`App listening on port ${port}`)
+  console.log(`🚀 App listening on port ${port}`)
 })
