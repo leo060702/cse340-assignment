@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Head partial: CSS, meta tags, title binding -->
+  <%- include("../partials/head"); %>
+  <title><%= title %></title>
+</head>
+
+<body>
+  <!-- Navigation -->
+  <header>
+    <%- nav %>
+  </header>
+
+  <!-- Main content -->
+  <main id="main-content" class="wrapper">
+    <%= content %>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <%- include("../partials/footer"); %>
+  </footer>
+</body>
+</html>
