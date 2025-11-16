@@ -26,9 +26,9 @@ const inventoryRoutes = require("./routes/inventoryRoute")
 const errorRoutes = require("./routes/errorRoute")
 
 // 挂载路由
-app.use("/", staticRoutes)
-app.use("/inv", inventoryRoutes)
-app.use("/error", errorRoutes)
+app.use("/", staticRoutes)        // 首页、静态页
+app.use("/inv", inventoryRoutes)  // 分类视图 + 详情页
+app.use("/error", errorRoutes)    // 故意触发 500 的路由
 
 /* ***********************
  * 404 Not Found Handler
@@ -40,14 +40,12 @@ app.use((req, res, next) => {
 })
 
 /* ***********************
- * Global Error Handler (500, all errors)
+ * Global Error Handler
  *************************/
 app.use(async (err, req, res, next) => {
-  console.error("⚠️ ERROR:", err.message)
+  console.error("ERROR:", err.message)
 
   const status = err.status || 500
-
-  // 导航栏（utilities/getNav 必须存在）
   const utilities = require("./utilities")
   const nav = await utilities.getNav()
 
@@ -59,10 +57,9 @@ app.use(async (err, req, res, next) => {
 })
 
 /* ***********************
- * Server Listener
+ * Start Server
  *************************/
 const port = process.env.PORT || 3000
-
 app.listen(port, () => {
-  console.log(`🚀 App listening on port ${port}`)
+  console.log(`App listening on port ${port}`)
 })
