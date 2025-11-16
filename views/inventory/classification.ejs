@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head') %>
+  <title><%= title %></title>
+</head>
+<body>
+
+  <!-- 顶部：站点头部 -->
+  <%- include('../partials/header') %>
+
+  <!-- 主导航 -->
+  <%- include('../partials/navigation') %>
+
+  <!-- 主内容：分类下的车辆列表 -->
+  <main class="main-content">
+    <h1><%= title %></h1>
+
+    <% if (message) { %>
+      <p class="notice"><%= message %></p>
+    <% } %>
+
+    <!-- 这里插入由 utilities 构建的车辆网格 -->
+    <%= grid %>
+  </main>
+
+  <!-- 页脚 -->
+  <%- include('../partials/footer') %>
+
+</body>
+</html>
