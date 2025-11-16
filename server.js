@@ -26,9 +26,9 @@ const inventoryRoutes = require("./routes/inventoryRoute")
 const errorRoutes = require("./routes/errorRoute")
 
 // 挂载路由
-app.use("/", staticRoutes)        // 首页、静态页
-app.use("/inv", inventoryRoutes)  // 分类视图 + 详情页
-app.use("/error", errorRoutes)    // 故意触发 500 的路由
+app.use("/", staticRoutes)        
+app.use("/inv", inventoryRoutes)  
+app.use("/error", errorRoutes)
 
 /* ***********************
  * 404 Not Found Handler
