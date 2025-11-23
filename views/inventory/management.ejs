@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head') %>
+  <title><%= title %></title>
+</head>
+<body>
+
+  <!-- 顶部：站点头部 -->
+  <%- include('../partials/header') %>
+
+  <!-- 主导航 -->
+  <%- include('../partials/navigation') %>
+
+  <main class="main-content">
+    <h1><%= title %></h1>
+
+    <!-- Flash messages -->
+    <% if (messages && messages.length > 0) { %>
+      <div class="notice">
+        <% messages.forEach(msg => { %>
+          <p><%= msg %></p>
+        <% }) %>
+      </div>
+    <% } %>
+
+    <section class="inv-management">
+      <h2>Management Links</h2>
+      <ul>
+        <li>
+          <a href="/inv/add-classification">Add New Classification</a>
+        </li>
+        <li>
+          <a href="/inv/add-inventory">Add New Inventory Item</a>
+        </li>
+      </ul>
+    </section>
+  </main>
+
+  <!-- 页脚 -->
+  <%- include('../partials/footer') %>
+
+</body>
+</html>
