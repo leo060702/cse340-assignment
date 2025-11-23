@@ -1,0 +1,174 @@
+<%- nav %>
+
+<main class="form-wrapper">
+
+  <h1>Add Vehicle</h1>
+
+  <!-- Flash notice -->
+  <% if (messages && messages.length > 0) { %>
+    <div class="notice">
+      <% messages.forEach(msg => { %>
+        <p><%= msg %></p>
+      <% }) %>
+    </div>
+  <% } %>
+
+  <!-- Server-side validation errors -->
+  <% if (errors && errors.length > 0) { %>
+    <ul class="errors">
+      <% errors.forEach(err => { %>
+        <li><%= err.msg %></li>
+      <% }) %>
+    </ul>
+  <% } %>
+
+  <form action="/inv/add-inventory" method="post" novalidate>
+
+    <!-- Classification Dropdown -->
+    <label for="classificationList">Classification <span class="required">*</span></label>
+    <%- classificationList %>
+
+    <!-- Make -->
+    <label for="inv_make">Make <span class="required">*</span></label>
+    <input
+      type="text"
+      id="inv_make"
+      name="inv_make"
+      required
+      value="<%= inv_make %>"
+    />
+
+    <!-- Model -->
+    <label for="inv_model">Model <span class="required">*</span></label>
+    <input
+      type="text"
+      id="inv_model"
+      name="inv_model"
+      required
+      value="<%= inv_model %>"
+    />
+
+    <!-- Description -->
+    <label for="inv_description">Description <span class="required">*</span></label>
+    <textarea
+      id="inv_description"
+      name="inv_description"
+      required
+    ><%= inv_description %></textarea>
+
+    <!-- Image Path -->
+    <label for="inv_image">Image Path <span class="required">*</span></label>
+    <input
+      type="text"
+      id="inv_image"
+      name="inv_image"
+      required
+      value="<%= inv_image %>"
+    />
+
+    <!-- Thumbnail Path -->
+    <label for="inv_thumbnail">Thumbnail Path <span class="required">*</span></label>
+    <input
+      type="text"
+      id="inv_thumbnail"
+      name="inv_thumbnail"
+      required
+      value="<%= inv_thumbnail %>"
+    />
+
+    <!-- Price -->
+    <label for="inv_price">Price <span class="required">*</span></label>
+    <input
+      type="number"
+      id="inv_price"
+      name="inv_price"
+      min="0"
+      step="0.01"
+      required
+      value="<%= inv_price %>"
+    />
+
+    <!-- Year -->
+    <label for="inv_year">Year (4 digits) <span class="required">*</span></label>
+    <input
+      type="number"
+      id="inv_year"
+      name="inv_year"
+      min="1900"
+      max="2099"
+      required
+      value="<%= inv_year %>"
+    />
+
+    <!-- Miles -->
+    <label for="inv_miles">Miles (digits only) <span class="required">*</span></label>
+    <input
+      type="number"
+      id="inv_miles"
+      name="inv_miles"
+      min="0"
+      step="1"
+      required
+      value="<%= inv_miles %>"
+      pattern="^[0-9]+$"
+      title="Digits only, no commas (e.g., 39500)"
+    />
+
+    <!-- Color -->
+    <label for="inv_color">Color <span class="required">*</span></label>
+    <input
+      type="text"
+      id="inv_color"
+      name="inv_color"
+      required
+      value="<%= inv_color %>"
+    />
+
+    <button type="submit" class="submit-btn">Add Vehicle</button>
+
+  </form>
+</main>
+
+<style>
+  .form-wrapper {
+    max-width: 600px;
+    margin: auto;
+    padding: 1rem;
+  }
+
+  form label {
+    display: block;
+    margin-top: 1rem;
+  }
+
+  .required {
+    color: red;
+  }
+
+  .errors {
+    background: #ffdddd;
+    border-left: 5px solid red;
+    padding: 10px;
+  }
+
+  .notice {
+    background: #ddffdd;
+    border-left: 5px solid green;
+    padding: 10px;
+  }
+
+  /* Client-side valid/invalid visual feedback */
+  input:invalid, textarea:invalid, select:invalid {
+    border-left: 4px solid red;
+  }
+
+  input:valid, textarea:valid, select:valid {
+    border-left: 4px solid green;
+  }
+
+  .submit-btn {
+    margin-top: 1.5rem;
+    padding: 10px;
+    font-size: 1.1rem;
+  }
+</style>
