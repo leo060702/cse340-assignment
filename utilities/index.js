@@ -1,24 +1,100 @@
-// utilities/index.js
-
 /**
- * Build navigation bar
- * You may already have a nav from the previous assignment.
- * If your original version is different, I can help merge them.
+ * utilities/index.js
+ * Updated for W04 – Dynamic Nav, Classification List, Grid, Error Handling
  */
+
+const invModel = require("../models/inventory-model");
+
+/* ===============================
+   NAVIGATION – dynamic from DB
+   =============================== */
 async function getNav() {
-  // 你也可以根据数据库分类动态生成导航。
-  // 暂时返回一个简单版本，确保项目不会报错。
-  return `
-    <nav>
-      <a href="/">Home</a>
-      <a href="/inv/type/1">Cars</a>
-      <a href="/inv/type/2">SUV</a>
-      <a href="/inv/type/3">Trucks</a>
-    </nav>
-  `;
+  try {
+    const data = await invModel.getClassifications();
+    let nav = `
+      <nav>
+        <a href="/">Home</a>
+        <a href="/inv">Inventory Management</a>
+    `;
+
+    data.rows.forEach((row) => {
+      nav += `
+        <a href="/inv/type/${row.classification_id}">
+          ${row.classification_name}
+        </a>
+      `;
+    });
+
+    nav += `</nav>`;
+
+    return nav;
+  } catch (err) {
+    // fallback nav
+    return `
+      <nav>
+        <a href="/">Home</a>
+        <a href="/inv">Inventory</a>
+      </nav>
+    `;
+  }
 }
 
-/** Format price in USD: $12,345.00 */
+/* ===============================
+   BUILD CLASSIFICATION LIST (select)
+   Used in Add Inventory form
+   =============================== */
+async function buildClassificationList(selectedId = null) {
+  const data = await invModel.getClassifications();
+  let list = `<select name="classification_id" id="classificationList" required>`;
+  list += `<option value="">Choose a Classification</option>`;
+
+  data.rows.forEach((row) => {
+    list += `<option value="${row.classification_id}"`;
+    if (Number(selectedId) === row.classification_id) {
+      list += " selected";
+    }
+    list += `>${row.classification_name}</option>`;
+  });
+
+  list += `</select>`;
+  return list;
+}
+
+/* ===============================
+   CLASSIFICATION GRID (W03)
+   =============================== */
+async function buildClassificationGrid(data) {
+  if (!data || data.length === 0) {
+    return `<p class="notice">No vehicles found in this classification.</p>`;
+  }
+
+  let grid = '<ul id="inv-display">';
+
+  data.forEach((vehicle) => {
+    grid += `
+      <li>
+        <a href="/inv/detail/${vehicle.inv_id}">
+          <img src="${vehicle.inv_thumbnail}" 
+               alt="Image of ${vehicle.inv_make} ${vehicle.inv_model}">
+        </a>
+        <h3>
+          <a href="/inv/detail/${vehicle.inv_id}">
+            ${vehicle.inv_make} ${vehicle.inv_model}
+          </a>
+        </h3>
+        <span>$${Number(vehicle.inv_price).toLocaleString("en-US")}</span>
+      </li>
+    `;
+  });
+
+  grid += "</ul>";
+  return grid;
+}
+
+/* ===============================
+   VEHICLE DETAIL HTML (W03)
+   You already had this – keep it
+   =============================== */
 function formatPriceUSD(num) {
   return Number(num).toLocaleString("en-US", {
     style: "currency",
@@ -26,15 +102,10 @@ function formatPriceUSD(num) {
   });
 }
 
-/** Format miles: 12,345 miles */
 function formatMiles(num) {
   return `${Number(num).toLocaleString("en-US")} miles`;
 }
 
-/**
- * Build vehicle detail HTML
- * This matches Assignment 3's requirement.
- */
 function buildVehicleHTML(vehicle) {
   const price = formatPriceUSD(vehicle.inv_price);
   const miles = formatMiles(vehicle.inv_miles);
@@ -61,7 +132,19 @@ function buildVehicleHTML(vehicle) {
   `;
 }
 
+/* ===============================
+   ERROR HANDLER WRAPPER
+   =============================== */
+function handleErrors(fn) {
+  return function (req, res, next) {
+    Promise.resolve(fn(req, res, next)).catch(next);
+  };
+}
+
 module.exports = {
   getNav,
+  buildClassificationList,
+  buildClassificationGrid,
   buildVehicleHTML,
+  handleErrors,
 };
