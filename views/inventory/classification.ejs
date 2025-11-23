@@ -16,11 +16,16 @@
   <main class="main-content">
     <h1><%= title %></h1>
 
-    <% if (message) { %>
-      <p class="notice"><%= message %></p>
+    <!-- Flash messages (统一使用 messages 数组) -->
+    <% if (messages && messages.length > 0) { %>
+      <div class="notice">
+        <% messages.forEach(msg => { %>
+          <p><%= msg %></p>
+        <% }) %>
+      </div>
     <% } %>
 
-    <!-- 这里插入由 utilities 构建的车辆网格 -->
+    <!-- 由 utilities.buildClassificationGrid() 生成的内容 -->
     <%= grid %>
   </main>
 
