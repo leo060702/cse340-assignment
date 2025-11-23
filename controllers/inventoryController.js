@@ -1,70 +1,139 @@
-// controllers/inventoryController.js
+/**
+ * controllers/inventoryController.js
+ * W04 – Add Classification + Add Inventory (client/server validation + stickiness)
+ * 保留 W03 分类/详情功能
+ */
+
 const invModel = require("../models/inventory-model");
 const utilities = require("../utilities");
 
-/**
- * 分类视图 /inv/type/:classificationId
- */
-async function buildByClassificationId(req, res, next) {
-  const classificationId = Number(req.params.classificationId);
-  if (Number.isNaN(classificationId)) {
-    const err = new Error("Invalid classification id");
-    err.status = 400;
-    return next(err);
-  }
-
+/* ===============================
+   W04: Inventory Management View
+   =============================== */
+async function buildManagementView(req, res, next) {
   try {
-    const data = await invModel.getInventoryByClassificationId(classificationId);
     const nav = await utilities.getNav();
-    const grid = await utilities.buildClassificationGrid(data);
-    const className = data[0]?.classification_name || "Vehicles";
-
-    res.render("inventory/classification", {
-      title: className,
+    res.render("inventory/management", {
+      title: "Inventory Management",
       nav,
-      grid,
       errors: null,
     });
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    next(err);
   }
 }
 
-/**
- * 车辆详情视图 /inv/detail/:invId
- */
-async function buildDetailView(req, res, next) {
-  const invId = Number(req.params.invId);
-  if (Number.isNaN(invId)) {
-    const err = new Error("Invalid vehicle id");
-    err.status = 400;
-    return next(err);
-  }
+/* ===============================
+   W04: Add Classification Views
+   =============================== */
 
+// GET: show add-classification form
+async function buildAddClassificationView(req, res, next) {
   try {
-    const vehicle = await invModel.getVehicleById(invId);
-    if (!vehicle) {
-      const err = new Error("Vehicle not found");
-      err.status = 404;
-      return next(err);
+    const nav = await utilities.getNav();
+    res.render("inventory/add-classification", {
+      title: "Add Classification",
+      nav,
+      errors: null,
+      classification_name: "",
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// POST: handle add-classification submission
+async function addClassification(req, res, next) {
+  try {
+    const { classification_name } = req.body;
+
+    const result = await invModel.addClassification(classification_name);
+
+    if (result) {
+      req.flash("notice", "Classification added successfully.");
+      const nav = await utilities.getNav(); // rebuild nav to include new class
+
+      return res.render("inventory/management", {
+        title: "Inventory Management",
+        nav,
+        errors: null,
+      });
     }
 
+    // insert failed
+    req.flash("notice", "Sorry, the classification insert failed.");
     const nav = await utilities.getNav();
-    const content = utilities.buildVehicleHTML(vehicle);
-    const title = `${vehicle.inv_make} ${vehicle.inv_model}`;
-
-    res.render("inventory/detail", {
-      title,
+    res.status(500).render("inventory/add-classification", {
+      title: "Add Classification",
       nav,
-      content,
       errors: null,
+      classification_name,
     });
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    next(err);
   }
 }
 
-module.exports = {
-  buildByClassificationId,
-  buildDetailView,
-};
+/* ===============================
+   W04: Add Inventory Views
+   =============================== */
+
+// GET: show add-inventory form
+async function buildAddInventoryView(req, res, next) {
+  try {
+    const nav = await utilities.getNav();
+    const classificationList = await utilities.buildClassificationList();
+
+    res.render("inventory/add-inventory", {
+      title: "Add Inventory",
+      nav,
+      classificationList,
+      errors: null,
+      inv_make: "",
+      inv_model: "",
+      inv_year: "",
+      inv_description: "",
+      inv_image: "/images/vehicles/no-image.png",
+      inv_thumbnail: "/images/vehicles/no-image-tn.png",
+      inv_price: "",
+      inv_miles: "",
+      inv_color: "",
+      classification_id: "",
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// POST: handle add-inventory submission
+async function addInventory(req, res, next) {
+  try {
+    const newInv = req.body;
+
+    const result = await invModel.addInventoryItem(newInv);
+
+    if (result) {
+      req.flash("notice", "Vehicle added successfully.");
+      const nav = await utilities.getNav();
+
+      return res.render("inventory/management", {
+        title: "Inventory Management",
+        nav,
+        errors: null,
+      });
+    }
+
+    // insert failed
+    req.flash("notice", "Sorry, the vehicle insert failed.");
+    const nav = await utilities.getNav();
+    const classificationList =
+      await utilities.buildClassificationList(newInv.classification_id);
+
+    res.status(500).render("inventory/add-inventory", {
+      title: "Add Inventory",
+      nav,
+      classificationList,
+      errors: null,
+      ...newInv, // sticky everything back into form
+    });
+  } catch
