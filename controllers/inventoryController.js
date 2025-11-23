@@ -1,7 +1,6 @@
 /**
  * controllers/inventoryController.js
- * W04 – Add Classification + Add Inventory (client/server validation + stickiness)
- * 保留 W03 分类/详情功能
+ * W03 + W04 compatible controller
  */
 
 const invModel = require("../models/inventory-model");
@@ -11,16 +10,12 @@ const utilities = require("../utilities");
    W04: Inventory Management View
    =============================== */
 async function buildManagementView(req, res, next) {
-  try {
-    const nav = await utilities.getNav();
-    res.render("inventory/management", {
-      title: "Inventory Management",
-      nav,
-      errors: null,
-    });
-  } catch (err) {
-    next(err);
-  }
+  const nav = await utilities.getNav();
+  res.render("inventory/management", {
+    title: "Inventory Management",
+    nav,
+    errors: null,
+  });
 }
 
 /* ===============================
@@ -29,49 +24,41 @@ async function buildManagementView(req, res, next) {
 
 // GET: show add-classification form
 async function buildAddClassificationView(req, res, next) {
-  try {
-    const nav = await utilities.getNav();
-    res.render("inventory/add-classification", {
-      title: "Add Classification",
-      nav,
-      errors: null,
-      classification_name: "",
-    });
-  } catch (err) {
-    next(err);
-  }
+  const nav = await utilities.getNav();
+  res.render("inventory/add-classification", {
+    title: "Add Classification",
+    nav,
+    errors: null,
+    classification_name: "",
+  });
 }
 
 // POST: handle add-classification submission
 async function addClassification(req, res, next) {
-  try {
-    const { classification_name } = req.body;
+  const { classification_name } = req.body;
 
-    const result = await invModel.addClassification(classification_name);
+  const result = await invModel.addClassification(classification_name);
 
-    if (result) {
-      req.flash("notice", "Classification added successfully.");
-      const nav = await utilities.getNav(); // rebuild nav to include new class
+  if (result) {
+    req.flash("notice", "Classification added successfully.");
+    const nav = await utilities.getNav(); // rebuild nav
 
-      return res.render("inventory/management", {
-        title: "Inventory Management",
-        nav,
-        errors: null,
-      });
-    }
-
-    // insert failed
-    req.flash("notice", "Sorry, the classification insert failed.");
-    const nav = await utilities.getNav();
-    res.status(500).render("inventory/add-classification", {
-      title: "Add Classification",
+    return res.render("inventory/management", {
+      title: "Inventory Management",
       nav,
       errors: null,
-      classification_name,
     });
-  } catch (err) {
-    next(err);
   }
+
+  // insert failed
+  req.flash("notice", "Sorry, the classification insert failed.");
+  const nav = await utilities.getNav();
+  res.status(500).render("inventory/add-classification", {
+    title: "Add Classification",
+    nav,
+    errors: null,
+    classification_name,
+  });
 }
 
 /* ===============================
@@ -80,60 +67,146 @@ async function addClassification(req, res, next) {
 
 // GET: show add-inventory form
 async function buildAddInventoryView(req, res, next) {
-  try {
-    const nav = await utilities.getNav();
-    const classificationList = await utilities.buildClassificationList();
+  const nav = await utilities.getNav();
+  const classificationList = await utilities.buildClassificationList();
 
-    res.render("inventory/add-inventory", {
-      title: "Add Inventory",
-      nav,
-      classificationList,
-      errors: null,
-      inv_make: "",
-      inv_model: "",
-      inv_year: "",
-      inv_description: "",
-      inv_image: "/images/vehicles/no-image.png",
-      inv_thumbnail: "/images/vehicles/no-image-tn.png",
-      inv_price: "",
-      inv_miles: "",
-      inv_color: "",
-      classification_id: "",
-    });
-  } catch (err) {
-    next(err);
-  }
+  res.render("inventory/add-inventory", {
+    title: "Add Inventory",
+    nav,
+    classificationList,
+    errors: null,
+    inv_make: "",
+    inv_model: "",
+    inv_year: "",
+    inv_description: "",
+    inv_image: "/images/vehicles/no-image.png",
+    inv_thumbnail: "/images/vehicles/no-image-tn.png",
+    inv_price: "",
+    inv_miles: "",
+    inv_color: "",
+    classification_id: "",
+  });
 }
 
 // POST: handle add-inventory submission
 async function addInventory(req, res, next) {
+  const newInv = req.body;
+
+  const result = await invModel.addInventoryItem(newInv);
+
+  if (result) {
+    req.flash("notice", "Vehicle added successfully.");
+    const nav = await utilities.getNav();
+
+    return res.render("inventory/management", {
+      title: "Inventory Management",
+      nav,
+      errors: null,
+    });
+  }
+
+  // insert failed
+  req.flash("notice", "Sorry, the vehicle insert failed.");
+  const nav = await utilities.getNav();
+  const classificationList = await utilities.buildClassificationList(
+    newInv.classification_id
+  );
+
+  res.status(500).render("inventory/add-inventory", {
+    title: "Add Inventory",
+    nav,
+    classificationList,
+    errors: null,
+    // sticky all fields
+    inv_make: newInv.inv_make || "",
+    inv_model: newInv.inv_model || "",
+    inv_year: newInv.inv_year || "",
+    inv_description: newInv.inv_description || "",
+    inv_image: newInv.inv_image || "",
+    inv_thumbnail: newInv.inv_thumbnail || "",
+    inv_price: newInv.inv_price || "",
+    inv_miles: newInv.inv_miles || "",
+    inv_color: newInv.inv_color || "",
+    classification_id: newInv.classification_id || "",
+  });
+}
+
+/* ===============================
+   W03: Existing Features (keep)
+   =============================== */
+
+/**
+ * Classification view /inv/type/:classificationId
+ */
+async function buildByClassificationId(req, res, next) {
+  const classificationId = Number(req.params.classificationId);
+  if (Number.isNaN(classificationId)) {
+    const err = new Error("Invalid classification id");
+    err.status = 400;
+    return next(err);
+  }
+
   try {
-    const newInv = req.body;
+    const data = await invModel.getInventoryByClassificationId(classificationId);
+    const nav = await utilities.getNav();
+    const grid = await utilities.buildClassificationGrid(data);
+    const className = data[0]?.classification_name || "Vehicles";
 
-    const result = await invModel.addInventoryItem(newInv);
+    res.render("inventory/classification", {
+      title: className,
+      nav,
+      grid,
+      errors: null,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
 
-    if (result) {
-      req.flash("notice", "Vehicle added successfully.");
-      const nav = await utilities.getNav();
+/**
+ * Vehicle detail view /inv/detail/:invId
+ */
+async function buildDetailView(req, res, next) {
+  const invId = Number(req.params.invId);
+  if (Number.isNaN(invId)) {
+    const err = new Error("Invalid vehicle id");
+    err.status = 400;
+    return next(err);
+  }
 
-      return res.render("inventory/management", {
-        title: "Inventory Management",
-        nav,
-        errors: null,
-      });
+  try {
+    const vehicle = await invModel.getVehicleById(invId);
+
+    if (!vehicle) {
+      const err = new Error("Vehicle not found");
+      err.status = 404;
+      return next(err);
     }
 
-    // insert failed
-    req.flash("notice", "Sorry, the vehicle insert failed.");
     const nav = await utilities.getNav();
-    const classificationList =
-      await utilities.buildClassificationList(newInv.classification_id);
+    const content = utilities.buildVehicleHTML(vehicle);
+    const title = `${vehicle.inv_make} ${vehicle.inv_model}`;
 
-    res.status(500).render("inventory/add-inventory", {
-      title: "Add Inventory",
+    res.render("inventory/detail", {
+      title,
       nav,
-      classificationList,
+      content,
       errors: null,
-      ...newInv, // sticky everything back into form
     });
-  } catch
+  } catch (error) {
+    next(error);
+  }
+}
+
+module.exports = {
+  // W04
+  buildManagementView,
+  buildAddClassificationView,
+  addClassification,
+  buildAddInventoryView,
+  addInventory,
+
+  // W03
+  buildByClassificationId,
+  buildDetailView,
+};
