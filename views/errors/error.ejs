@@ -2,22 +2,34 @@
 <html lang="en">
 <head>
   <%- include('../partials/head'); %>
+  <title><%= title %></title>
 </head>
 <body>
-<header>
-  <%- nav %>
-</header>
 
-<main id="main-content">
-  <section class="error-view">
-    <h1><%= title %></h1>
-    <p><%= message %></p>
-    <p>Please use the main navigation to continue.</p>
-  </section>
-</main>
+  <!-- Header & Navigation -->
+  <header>
+    <%- include('../partials/header'); %>
+  </header>
 
-<footer>
-  <%- include('../partials/footer'); %>
-</footer>
+  <nav>
+    <%- nav %>
+  </nav>
+
+  <!-- Main Error Content -->
+  <main id="main-content">
+    <section class="error-view">
+      <h1><%= title %></h1>
+
+      <p><%= message %></p>
+
+      <p>Please use the main navigation to continue.</p>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <%- include('../partials/footer'); %>
+  </footer>
+
 </body>
 </html>
