@@ -11,30 +11,33 @@ const invModel = require("../models/inventory-model");
 async function getNav() {
   try {
     const data = await invModel.getClassifications();
-    let nav = `
-      <nav>
-        <a href="/">Home</a>
-        <a href="/inv">Inventory Management</a>
+
+    let nav = "<ul>";
+    nav += `
+      <li><a href="/" title="Home Page">Home</a></li>
+      <li><a href="/inv" title="Inventory Management">Inventory Management</a></li>
     `;
 
     data.rows.forEach((row) => {
       nav += `
-        <a href="/inv/type/${row.classification_id}">
-          ${row.classification_name}
-        </a>
+        <li>
+          <a href="/inv/type/${row.classification_id}"
+             title="See ${row.classification_name} vehicles">
+            ${row.classification_name}
+          </a>
+        </li>
       `;
     });
 
-    nav += `</nav>`;
-
+    nav += "</ul>";
     return nav;
   } catch (err) {
     // fallback nav
     return `
-      <nav>
-        <a href="/">Home</a>
-        <a href="/inv">Inventory</a>
-      </nav>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/inv">Inventory</a></li>
+      </ul>
     `;
   }
 }
@@ -92,8 +95,7 @@ async function buildClassificationGrid(data) {
 }
 
 /* ===============================
-   VEHICLE DETAIL HTML (W03)
-   You already had this – keep it
+   VEHICLE DETAIL HTML (W03 + W04)
    =============================== */
 function formatPriceUSD(num) {
   return Number(num).toLocaleString("en-US", {
