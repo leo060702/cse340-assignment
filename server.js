@@ -41,6 +41,16 @@ app.use((req, res, next) => {
 });
 
 /* ***********************
+ * Global Navigation Middleware
+ *************************/
+const utilities = require("./utilities");
+
+app.use(async (req, res, next) => {
+  res.locals.nav = await utilities.getNav();
+  next();
+});
+
+/* ***********************
  * View Engine and Static Files
  *************************/
 app.set("view engine", "ejs");
