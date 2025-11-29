@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account Management</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+  <!-- Header -->
+  <%- include("../partials/header") %>
+
+  <main>
+    <h1>Account Management</h1>
+
+    <!-- Flash Messages -->
+    <% if (messages && messages.length > 0) { %>
+      <div class="notice">
+        <% messages.forEach(msg => { %>
+          <p><%= msg %></p>
+        <% }) %>
+      </div>
+    <% } %>
+
+    <!-- Welcome Message -->
+    <section class="account-info">
+      <h2>
+        Welcome <%= accountData.account_firstname %> <%= accountData.account_lastname %>
+      </h2>
+      <p>Email: <%= accountData.account_email %></p>
+      <p>Account Type: <%= accountData.account_type %></p>
+    </section>
+
+    <!-- Account Update Options -->
+    <section class="account-actions">
+      <h2>Account Options</h2>
+
+      <!-- Update account info -->
+      <a class="button" href="/account/update/<%= accountData.account_id %>">
+        Update Account Information
+      </a>
+
+      <!-- Change password -->
+      <a class="button" href="/account/update-password/<%= accountData.account_id %>">
+        Change Password
+      </a>
+    </section>
+
+    <!-- Employee / Admin Exclusive Section -->
+    <% if (accountData.account_type === "Employee" || accountData.account_type === "Admin") { %>
+      <section class="admin-tools">
+        <h2>Inventory Management</h2>
+        <p>You have additional privileges to manage vehicle inventory.</p>
+
+        <a class="button" href="/inv/">
+          Go to Inventory Management
+        </a>
+      </section>
+    <% } %>
+
+  </main>
+
+  <!-- Footer -->
+  <%- include("../partials/footer") %>
+</body>
+</html>
