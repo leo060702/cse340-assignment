@@ -11,7 +11,7 @@ const utilities = require("../utilities/");
 const regValidate = require("../utilities/account-validation");
 
 /* ==========
- *  VIEWS
+ *  VIEW ROUTES
  * ========== */
 
 // Login view
@@ -41,7 +41,7 @@ router.get(
 );
 
 /* ================
- *  PROCESSORS
+ *  PROCESS ROUTES
  * ================ */
 
 // Registration process
@@ -60,7 +60,7 @@ router.post(
   utilities.handleErrors(accountController.accountLogin)
 );
 
-// Update account info
+// Update account info (first name, last name, email)
 router.post(
   "/update",
   utilities.checkLogin,
