@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Update Account Information</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+  <!-- Header -->
+  <%- include("../partials/header") %>
+
+  <main>
+    <h1>Account Settings</h1>
+
+    <!-- Flash Messages -->
+    <% if (messages && messages.length > 0) { %>
+      <div class="notice">
+        <% messages.forEach(msg => { %>
+          <p><%= msg %></p>
+        <% }) %>
+      </div>
+    <% } %>
+
+    <!-- ============================= -->
+    <!-- ① Update Account Information -->
+    <!-- ============================= -->
+    <section>
+      <h2>Update Account Information</h2>
+
+      <form action="/account/update" method="post" class="account-form">
+        <input type="hidden" name="account_id" value="<%= accountData.account_id %>">
+
+        <label for="account_firstname">First Name</label>
+        <input type="text" id="account_firstname" name="account_firstname"
+               value="<%= accountData.account_firstname %>" required>
+
+        <label for="account_lastname">Last Name</label>
+        <input type="text" id="account_lastname" name="account_lastname"
+               value="<%= accountData.account_lastname %>" required>
+
+        <label for="account_email">Email</label>
+        <input type="email" id="account_email" name="account_email"
+               value="<%= accountData.account_email %>" required>
+
+        <button type="submit" class="button">Update Information</button>
+      </form>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- ============================= -->
+    <!-- ② Change Password -->
+    <!-- ============================= -->
+    <section>
+      <h2>Change Password</h2>
+
+      <form action="/account/update-password" method="post" class="account-form">
+        <input type="hidden" name="account_id" value="<%= accountData.account_id %>">
+
+        <label for="account_password">New Password</label>
+        <input type="password" id="account_password" name="account_password" required>
+
+        <button type="submit" class="button">Update Password</button>
+      </form>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <%- include("../partials/footer") %>
+
+</body>
+</html>
