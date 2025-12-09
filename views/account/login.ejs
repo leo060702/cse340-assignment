@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account Login</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+  <!-- Header -->
+  <%- include("../partials/header") %>
+
+  <main>
+    <h1>Account Login</h1>
+
+    <!-- Flash Messages -->
+    <% if (messages && messages.length > 0) { %>
+      <div class="notice">
+        <% messages.forEach(msg => { %>
+          <p><%= msg %></p>
+        <% }) %>
+      </div>
+    <% } %>
+
+    <!-- Validation Errors -->
+    <% if (errors && errors.length > 0) { %>
+      <div class="notice error">
+        <% errors.forEach(error => { %>
+          <p><%= error.msg %></p>
+        <% }) %>
+      </div>
+    <% } %>
+
+    <!-- Login Form -->
+    <section class="account-info">
+      <h2>Please log in to your account</h2>
+
+      <form action="/account/login" method="post" class="account-form" novalidate>
+        <!-- Email -->
+        <label for="account_email">Email</label>
+        <input
+          type="email"
+          id="account_email"
+          name="account_email"
+          required
+          value="<%= typeof account_email !== 'undefined' ? account_email : '' %>"
+        >
+
+        <!-- Password -->
+        <label for="account_password">Password</label>
+        <input
+          type="password"
+          id="account_password"
+          name="account_password"
+          required
+        >
+
+        <button type="submit" class="button">Login</button>
+      </form>
+    </section>
+
+    <section class="account-actions">
+      <p>
+        Don't have an account yet?
+        <a href="/account/register">Register here</a>.
+      </p>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <%- include("../partials/footer") %>
+</body>
+</html>
