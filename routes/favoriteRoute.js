@@ -5,18 +5,31 @@ const router = express.Router();
 const favoriteController = require("../controllers/favoriteController");
 const utilities = require("../utilities/");
 
-// Add favorite
-router.post(
-  "/add",
-  utilities.checkLogin, 
-  favoriteController.addFavorite
+// ------------------------------
+// View all favorites (GET /favorite)
+// ------------------------------
+router.get(
+  "/",
+  utilities.checkLogin,
+  utilities.handleErrors(favoriteController.listFavorites)
 );
 
-// Remove favorite
+// ------------------------------
+// Add favorite (POST /favorite/add)
+// ------------------------------
+router.post(
+  "/add",
+  utilities.checkLogin,
+  utilities.handleErrors(favoriteController.addFavorite)
+);
+
+// ------------------------------
+// Remove favorite (POST /favorite/remove)
+// ------------------------------
 router.post(
   "/remove",
   utilities.checkLogin,
-  favoriteController.removeFavorite
+  utilities.handleErrors(favoriteController.removeFavorite)
 );
 
 module.exports = router;
