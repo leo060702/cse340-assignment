@@ -1,68 +1,59 @@
 /**
  * models/favorite-model.js
- * Favorite data access functions
+ * DB access for favorites
  */
 
 const pool = require("../database/");
 
 /**
- * Add favorite (ignore if already exists)
+ * Add a favorite (ignore if already exists)
  */
 async function addFavorite(account_id, inv_id) {
-  try {
-    const sql = `
-      INSERT INTO public.favorite (account_id, inv_id)
-      VALUES ($1, $2)
-      ON CONFLICT (account_id, inv_id) DO NOTHING
-      RETURNING favorite_id;
-    `;
-    const data = await pool.query(sql, [account_id, inv_id]);
-    // 如果是重复收藏，rows[0] 会是 undefined，这里可以直接返回
-    return data.rows[0];
-  } catch (error) {
-    console.error("addFavorite error:", error);
-    throw error;
-  }
+  const sql = `
+    INSERT INTO favorite (account_id, inv_id)
+    VALUES ($1, $2)
+    ON CONFLICT (account_id, inv_id) DO NOTHING;
+  `;
+  await pool.query(sql, [account_id, inv_id]);
+  return true;
 }
 
 /**
- * Remove favorite
+ * Remove a favorite
  */
 async function removeFavorite(account_id, inv_id) {
-  try {
-    const sql = `
-      DELETE FROM public.favorite
-      WHERE account_id = $1 AND inv_id = $2;
-    `;
-    const data = await pool.query(sql, [account_id, inv_id]);
-    return data.rowCount; // 删除了多少条
-  } catch (error) {
-    console.error("removeFavorite error:", error);
-    throw error;
-  }
+  const sql = `
+    DELETE FROM favorite
+    WHERE account_id = $1 AND inv_id = $2;
+  `;
+  await pool.query(sql, [account_id, inv_id]);
+  return true;
 }
 
 /**
- * Check if this vehicle is already favorited by this user
+ * Get all favorites for one account (with vehicle info)
  */
-async function isFavorite(account_id, inv_id) {
-  try {
-    const sql = `
-      SELECT 1
-      FROM public.favorite
-      WHERE account_id = $1 AND inv_id = $2
-      LIMIT 1;
-    `;
-    const data = await pool.query(sql, [account_id, inv_id]);
-    return data.rowCount > 0;
-  } catch (error) {
-    console.error("isFavorite error:", error);
-    throw error;
-  }
+async function getFavoritesByAccountId(account_id) {
+  const sql = `
+    SELECT
+      f.favorite_id,
+      f.created_at,
+      i.inv_id,
+      i.inv_make,
+      i.inv_model,
+      i.inv_price,
+      i.inv_thumbnail
+    FROM favorite AS f
+      JOIN inventory AS i ON f.inv_id = i.inv_id
+    WHERE f.account_id = $1
+    ORDER BY f.created_at DESC;
+  `;
+  const result = await pool.query(sql, [account_id]);
+  return result.rows;
 }
 
 module.exports = {
   addFavorite,
   removeFavorite,
-  isFavorite,
+  getFavoritesByAccountId,
 };
