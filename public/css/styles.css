@@ -26,6 +26,7 @@ header h1 {
 nav ul {
     list-style: none;
     padding: 0;
+    margin: 0;
     display: flex; /* 将导航项变为水平 */
     justify-content: space-around;
     /* TODO: 选择导航栏的背景颜色 */
@@ -131,6 +132,56 @@ h1, h2 {
     height: auto;
 }
 
+/* ================================
+   车辆列表 & 详情页样式（新增）
+   ================================ */
+
+/* 分类列表页面的车辆网格 */
+#inv-display {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+}
+
+#inv-display li {
+    background-color: #f8f8f8;
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+}
+
+/* ★ 限制列表页图片尺寸，防止超大 */
+#inv-display img {
+    width: 100%;
+    max-width: 260px;  /* 你可以改成 220~300 之间自己喜欢的值 */
+    height: auto;
+    border-radius: 6px;
+    display: block;
+    margin: 0 auto 0.5rem;
+}
+
+/* 车辆详情页布局 */
+.vehicle-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.vehicle-detail__image img {
+    max-width: 100%;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.vehicle-detail__info p {
+    line-height: 1.5;
+    margin-bottom: 0.5rem;
+}
+
 /* --- 大型屏幕媒体查询 --- */
 /* 作业要求：使用媒体查询调整大屏幕布局 
   我们将使用 768px 作为断点示例 
@@ -188,5 +239,24 @@ h1, h2 {
     .upgrades {
         grid-column: 1; /* 升级在第一列 */
         grid-row: 1;
+    }
+
+    /* 大屏幕时，车辆详情页左右布局 */
+    .vehicle-detail {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+
+    .vehicle-detail__image {
+        flex: 0 0 320px;
+    }
+
+    .vehicle-detail__image img {
+        max-width: 320px;
+    }
+
+    .vehicle-detail__info {
+        flex: 1;
+        padding-left: 2rem;
     }
 }
