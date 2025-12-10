@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head') %>
+  <title><%= title %></title>
+</head>
+<body>
+  <%- include('../partials/header') %>
+
+  <main class="main-content">
+    <h1>My Favorite Vehicles</h1>
+
+    <% if (!vehicles || vehicles.length === 0) { %>
+      <p>You have no favorite vehicles yet.</p>
+    <% } else { %>
+      <ul id="inv-display">
+        <% vehicles.forEach(v => { %>
+          <li>
+            <a href="/inv/detail/<%= v.inv_id %>">
+              <img src="<%= v.inv_thumbnail %>" 
+                   alt="Image of <%= v.inv_make %> <%= v.inv_model %>">
+            </a>
+            <h3>
+              <a href="/inv/detail/<%= v.inv_id %>">
+                <%= v.inv_make %> <%= v.inv_model %>
+              </a>
+            </h3>
+            <p>$<%= Number(v.inv_price).toLocaleString("en-US") %></p>
+            <% if (v.favorite_created_at) { %>
+              <p>Added: <%= v.favorite_created_at %></p>
+            <% } %>
+          </li>
+        <% }) %>
+      </ul>
+    <% } %>
+  </main>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>
