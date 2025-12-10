@@ -73,6 +73,7 @@ const inventoryRoutes = require("./routes/inventoryRoute");
 const errorRoutes = require("./routes/errorRoute");
 // ✅ 新增：账号相关路由
 const accountRoutes = require("./routes/accountRoute");
+const favoriteRoute = require("./routes/favoriteRoute");
 
 // Mount routes
 app.use("/", staticRoutes);
