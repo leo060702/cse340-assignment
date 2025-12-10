@@ -2,17 +2,62 @@
 <html lang="en">
 <head>
   <%- include('../partials/head') %>
+  <title><%= title %></title>
 </head>
 <body>
 
-  <!-- 顶部：站点头部 -->
+  <!-- Header -->
   <%- include('../partials/header') %>
 
-  <!-- 主内容 -->
-<main class="main-content">
-  <%- content %>   <!-- 注意是 - 号 -->
-</main>
-  <!-- 页脚 -->
+  <main class="vehicle-detail">
+
+    <!-- Flash messages -->
+    <% if (messages && messages.length > 0) { %>
+      <div class="notice">
+        <% messages.forEach(msg => { %>
+          <p><%= msg %></p>
+        <% }) %>
+      </div>
+    <% } %>
+
+    <!-- Vehicle Title -->
+    <h1><%= vehicle.inv_make %> <%= vehicle.inv_model %></h1>
+
+    <div class="detail-layout">
+
+      <!-- Vehicle Image -->
+      <div class="detail-image">
+        <img src="<%= vehicle.inv_image %>" alt="<%= vehicle.inv_make + ' ' + vehicle.inv_model %>">
+      </div>
+
+      <!-- Vehicle Info -->
+      <div class="detail-info">
+        <h2>Price: $<%= new Intl.NumberFormat().format(vehicle.inv_price) %></h2>
+        <p><%= vehicle.inv_description %></p>
+
+        <h3>Color: <%= vehicle.inv_color %></h3>
+        <h3>Miles: <%= new Intl.NumberFormat().format(vehicle.inv_miles) %></h3>
+
+        <!-- Favorite Button (only if logged in) -->
+        <% if (locals.loggedin) { %>
+          <form method="post" action="<%= isFavorite ? '/favorite/remove' : '/favorite/add' %>">
+            <input type="hidden" name="inv_id" value="<%= vehicle.inv_id %>">
+            <button type="submit" class="favorite-btn">
+              <%= isFavorite ? '★ Remove from Favorites' : '☆ Add to Favorites' %>
+            </button>
+          </form>
+        <% } else { %>
+          <p>
+            <a href="/account/login">Log in</a> to add this vehicle to your favorites.
+          </p>
+        <% } %>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
   <%- include('../partials/footer') %>
 
 </body>
