@@ -4,6 +4,7 @@
  */
 
 const invModel = require("../models/inventory-model");
+const favoriteModel = require("../models/favorite-model"); // ★ 新增：收藏表
 const utilities = require("../utilities");
 
 /* ===============================
@@ -165,6 +166,8 @@ async function buildByClassificationId(req, res, next) {
 
 /**
  * Vehicle detail view /inv/detail/:invId
+ * 现在直接把 vehicle 传给 detail.ejs，
+ * 再加上 isFavorite 用来控制按钮状态
  */
 async function buildDetailView(req, res, next) {
   const invId = Number(req.params.invId);
@@ -175,8 +178,8 @@ async function buildDetailView(req, res, next) {
   }
 
   try {
+    // 1. 取车辆
     const vehicle = await invModel.getVehicleById(invId);
-
     if (!vehicle) {
       const err = new Error("Vehicle not found");
       err.status = 404;
@@ -184,13 +187,30 @@ async function buildDetailView(req, res, next) {
     }
 
     const nav = await utilities.getNav();
-    const content = utilities.buildVehicleHTML(vehicle);
+
+    // 2. 是否已收藏（默认 false）
+    let isFavorite = false;
+    const accountData = res.locals.accountData;
+    const account_id = accountData?.account_id;
+
+    if (account_id) {
+      try {
+        const fav = await favoriteModel.getFavorite(account_id, invId);
+        if (fav) isFavorite = true;
+      } catch (favErr) {
+        console.error("check favorite error:", favErr);
+        // 收藏查询出错不影响页面显示，所以不抛出
+      }
+    }
+
     const title = `${vehicle.inv_make} ${vehicle.inv_model}`;
 
+    // 3. 渲染 detail.ejs，传 vehicle + isFavorite
     res.render("inventory/detail", {
       title,
       nav,
-      content,
+      vehicle,
+      isFavorite,
       errors: null,
     });
   } catch (error) {
